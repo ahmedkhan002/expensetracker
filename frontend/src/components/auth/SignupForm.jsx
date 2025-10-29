@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useDropzone } from "react-dropzone";
 import { Eye, EyeOff, Upload, User } from "lucide-react";
+import axios from 'axios'
+import toast from "react-hot-toast";
 
 const SignupForm = ({ onChange }) => {
     const { register, handleSubmit } = useForm();
@@ -19,8 +21,14 @@ const SignupForm = ({ onChange }) => {
         multiple: false,
     });
 
-    const onSubmit = (data) => {
-        alert(JSON.stringify({ ...data, profileImage }));
+    const onSubmit = async (data) => {
+        const res = await axios.post(import.meta.env.VITE_BACKEND_URL + '/auth/register', { ...data, profileImage });
+        if (res.data.success === true) {
+            toast.success('Account Created Successfully!')
+            onChange('login')
+        } else {
+            toast.error(res.data.message)
+        }
     };
 
     return (
@@ -68,7 +76,7 @@ const SignupForm = ({ onChange }) => {
                             <input
                                 type="text"
                                 placeholder="John"
-                                {...register("fullName")}
+                                {...register("fullname")}
                                 className="w-full px-4 py-3 rounded-md border border-gray-200 text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#6757ac] placeholder-gray-400"
                                 required
                             />

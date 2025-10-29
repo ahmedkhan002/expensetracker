@@ -2,14 +2,23 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import { Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
+import { useNavigate } from "react-router";
+import axios from "axios";
+import toast from "react-hot-toast";
 
 const LoginForm = ({ onChange }) => {
     const { register, handleSubmit } = useForm();
     const [showPassword, setShowPassword] = useState(false);
+    const navigate = useNavigate();
 
-    const onSubmit = (data) => {
-        alert(JSON.stringify(data));
-        
+    const onSubmit = async (data) => {
+        const res = await axios.post(import.meta.env.VITE_BACKEND_URL + '/auth/login', { ...data });
+        if (res.data.success === true) {
+            toast.success('Login Successfull!')
+            navigate('/home');
+        } else {
+            toast.error(res.data.message)
+        }
     };
 
     return (
@@ -71,14 +80,14 @@ const LoginForm = ({ onChange }) => {
                         LOGIN
                     </button>
                 </form>
-                  <p className="text-sm max-lg:text-center mt-2 text-gray-700">
-                        Don’t have an account?{" "}
-                        <button
-                            onClick={() => onChange('signup')}
-                            className="text-[#6757ac] cursor-pointer font-medium hover:underline">
-                            SignUp
-                        </button>
-                    </p>
+                <p className="text-sm max-lg:text-center mt-2 text-gray-700">
+                    Don’t have an account?{" "}
+                    <button
+                        onClick={() => onChange('signup')}
+                        className="text-[#6757ac] cursor-pointer font-medium hover:underline">
+                        SignUp
+                    </button>
+                </p>
             </div>
         </section>
     );

@@ -12,6 +12,9 @@ node_modules
 dist
 dist-ssr
 *.local
+backend
+context
+Expenses.jsx
 
 # Editor directories and files
 .vscode/*

@@ -5,8 +5,13 @@ import {
   TrendingDown,
   LogOut,
 } from "lucide-react";
+import { useNavigate } from "react-router";
+import { useAppContext } from '../context/context';
 
 const Sidebar = () => {
+  const {internalActiveSection, setInternalActiveSection } = useAppContext();
+  const navigate = useNavigate()
+
   return (
     <aside className="hidden lg:flex flex-col w-64 bg-white border-r h-screen border-gray-200 p-6">
       <div className="flex flex-col items-center mb-10">
@@ -26,8 +31,8 @@ const Sidebar = () => {
         <ul className="space-y-3">
           <li>
             <a
-              href="#"
-              className="flex items-center gap-3 p-3 rounded-xl bg-purple-600 text-white font-medium transition hover:bg-purple-700"
+              onClick={() => setInternalActiveSection('Dashboard')}
+              className={`flex items-center gap-3 p-3 rounded-xl ${internalActiveSection === "Dashboard" ? "bg-purple-600 text-white" : "text-gray-700"} font-medium transition hover:text-white cursor-pointer hover:bg-purple-700`}
             >
               <LayoutDashboard size={20} />
               Dashboard
@@ -35,8 +40,8 @@ const Sidebar = () => {
           </li>
           <li>
             <a
-              href="#"
-              className="flex items-center gap-3 p-3 rounded-xl text-gray-700 font-medium transition hover:bg-purple-50 hover:text-purple-600"
+              onClick={() => setInternalActiveSection('Income')}
+              className={`flex items-center gap-3 p-3 rounded-xl ${internalActiveSection === "Income" ? "bg-purple-600 text-white" : "text-gray-700"} font-medium transition hover:text-white cursor-pointer hover:bg-purple-700`}
             >
               <Wallet size={20} />
               Income
@@ -44,8 +49,8 @@ const Sidebar = () => {
           </li>
           <li>
             <a
-              href="#"
-              className="flex items-center gap-3 p-3 rounded-xl text-gray-700 font-medium transition hover:bg-purple-50 hover:text-purple-600"
+              onClick={() => setInternalActiveSection('Expenses')}
+              className={`flex items-center gap-3 p-3 rounded-xl ${internalActiveSection === "Expenses" ? "bg-purple-600 text-white" : "text-gray-700"} font-medium transition hover:text-white cursor-pointer hover:bg-purple-700`}
             >
               <TrendingDown size={20} />
               Expense
@@ -53,8 +58,8 @@ const Sidebar = () => {
           </li>
           <li>
             <a
-              href="#"
-              className="flex items-center gap-3 p-3 rounded-xl text-gray-700 font-medium transition hover:bg-purple-50 hover:text-purple-600"
+              onClick={() => navigate('/auth')}
+              className={`flex items-center gap-3 p-3 rounded-xl ${internalActiveSection === "Logout" ? "bg-purple-600 text-white" : "text-gray-700"} font-medium transition hover:text-white cursor-pointer hover:bg-purple-700`}
             >
               <LogOut size={20} />
               Logout
