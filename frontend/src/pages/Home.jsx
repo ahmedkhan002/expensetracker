@@ -13,7 +13,7 @@ const Home = () => {
                     <div className="lg:w-1/4 xl:w-1/6 z-100">
                         <Sidebar />
                     </div>
-                    <div className="grow overflow-scroll overflow-x-hidden min-h-4/4">
+                    <div className="grow overflow-scroll pb-100 overflow-x-hidden min-h-4/4">
                         <Dashboard />
                     </div>
                 </div>
