@@ -7,17 +7,28 @@ import axios from "axios";
 import toast from "react-hot-toast";
 
 const LoginForm = ({ onChange }) => {
+    const [loading, setloading] = useState(false)
     const { register, handleSubmit } = useForm();
     const [showPassword, setShowPassword] = useState(false);
     const navigate = useNavigate();
 
     const onSubmit = async (data) => {
-        const res = await axios.post(import.meta.env.VITE_BACKEND_URL + '/auth/login', { ...data });
-        if (res.data.success === true) {
-            toast.success('Login Successfull!')
-            navigate('/home');
-        } else {
-            toast.error(res.data.message)
+        try {
+            setloading(true)
+            const res = await axios.post(import.meta.env.VITE_BACKEND_URL + '/auth/login', { ...data }, { withCredentials: true });
+            if (res.data.success === true) {
+                toast.success('Login Successfull!')
+                setloading(false)
+                navigate('/home');
+            } else {
+                toast.error(res?.data?.message)
+                setloading(false)
+            }
+        } catch (err) {
+            const errorMessage =
+                err.response?.data?.message || "Something went wrong!";
+            toast.error(errorMessage);
+            setloading(false);
         }
     };
 
@@ -74,10 +85,11 @@ const LoginForm = ({ onChange }) => {
                     </div>
 
                     <button
+                        disabled={loading}
                         type="submit"
-                        className="w-full bg-[#6757ac] cursor-pointer hover:bg-[#6757ac7c] hover:text-[#5d49b6] text-white font-semibold py-3 rounded-md transition duration-200"
+                        className={`w-full bg-[#6757ac] hover:bg-[#6757ac7c] hover:text-[#5d49b6] text-white font-semibold py-3 rounded-md transition duration-200 ${loading ? "cursor-not-allowed hover:bg-gray-300 bg-gray-300" : "cursor-pointer"}`}
                     >
-                        LOGIN
+                        {loading ? 'Loading...' : 'Login'}
                     </button>
                 </form>
                 <p className="text-sm max-lg:text-center mt-2 text-gray-700">
@@ -85,7 +97,7 @@ const LoginForm = ({ onChange }) => {
                     <button
                         onClick={() => onChange('signup')}
                         className="text-[#6757ac] cursor-pointer font-medium hover:underline">
-                        SignUp
+                        Sign Up
                     </button>
                 </p>
             </div>

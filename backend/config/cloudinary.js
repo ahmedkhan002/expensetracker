@@ -1,36 +1,46 @@
-import { v2 as cloudinary } from 'cloudinary';
-import fs from 'fs'
-import 'dotenv/config'
+import { v2 as cloudinary } from "cloudinary";
+import fs from "fs";
+import "dotenv/config";
 
 cloudinary.config({
-    cloud_name: process.env.CD_CLOUD_NAME,
-    api_key: process.env.CD_API_KEY,
-    api_secret: process.env.CD_API_SECRET
+  cloud_name: process.env.CD_CLOUD_NAME,
+  api_key: process.env.CD_API_KEY,
+  api_secret: process.env.CD_API_SECRET,
 });
 
-export const uploadOnCLoudinary = async (file) => {
-    try {
-        if (!file) return null;
-
-        const res = await cloudinary.uploader.upload(file, {
-            resource_type: 'auto'
-        })
-
-        console.log('file uploaded successfully', res.url)
-        return res;
-    } catch (error) {
-        fs.unlinkSync(file);
-        return error;
+export const uploadOnCLoudinary = async (filePath) => {
+  try {
+    if (!filePath) {
+      console.log("⚠️ No file path provided to Cloudinary");
+      return null;
     }
-}
+
+    const result = await cloudinary.uploader.upload(filePath, {
+      folder: "expense-tracker-users",
+      resource_type: "auto",
+    });
+
+    console.log("✅ Uploaded successfully:", result.secure_url);
+
+    // ✅ Remove file safely
+    if (fs.existsSync(filePath)) {
+      fs.unlinkSync(filePath);
+    }
+
+    return result; // ✅ Returns the real Cloudinary object
+  } catch (error) {
+    console.error("❌ Cloudinary upload error:", error);
+    return null;
+  }
+};
 
 export const deleteFromCloudinary = async (publicId) => {
-    try {
-        const res = await cloudinary.uploader.destroy(publicId, { invalidate: true });
-        console.log("File deleted:", res);
-        return res;
-    } catch (error) {
-        console.error("Cloudinary delete error:", error);
-        throw error;
-    }
+  try {
+    const result = await cloudinary.uploader.destroy(publicId, { invalidate: true });
+    console.log("File deleted from Cloudinary:", result);
+    return result;
+  } catch (error) {
+    console.error("Cloudinary delete error:", error);
+    throw error;
+  }
 };

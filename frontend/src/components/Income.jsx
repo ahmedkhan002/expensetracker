@@ -1,107 +1,140 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react';
 import { Bar, BarChart, Tooltip, XAxis, YAxis } from 'recharts';
+import { ArrowDownRight, ArrowUpRight, Download, Plus, X } from 'lucide-react';
+import { useForm } from "react-hook-form";
+import toast from 'react-hot-toast';
+import EmojiPicker from "emoji-picker-react";
 import { useAppContext } from '../context/context'
-import { ArrowDownRight, ArrowUpRight, Download, Plus } from 'lucide-react';
+import axios from 'axios'
 
-const Income = ({ showPage }) => {
-    const { internalActiveSection } = useAppContext();
-    const data = [
-        {
-            name: 'Shopping',
-            Amount: 430,
-        },
-        {
-            name: 'Travel',
-            Amount: 670,
-        },
-        {
-            name: 'Electricity Bill',
-            Amount: 200,
-        },
-        {
-            name: 'Loan Repayment',
-            Amount: 600,
-        },
-        {
-            name: 'Loan Repayment',
-            Amount: 800,
-        },
-        {
-            name: 'Loan Repayment',
-            Amount: 400,
-        },
-        {
-            name: 'Loan Repayment',
-            Amount: 350,
-        },
-        {
-            name: 'Loan Repayment',
-            Amount: 500,
-        },
-        {
-            name: 'Loan Repayment',
-            Amount: 200,
-        },
-        {
-            name: 'Loan Repayment',
-            Amount: 250,
-        },
+const Income = () => {
+    const { internalActiveSection, user, getUser } = useAppContext();
+    const [open, setOpen] = useState(false);
+    const { register, handleSubmit, reset, formState: { errors } } = useForm();
+    const [emoji, setEmoji] = useState(null);
+    const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+    const [incomes, setIncomes] = useState([]);
 
-    ];
-    const transactions = [
-        { id: 1, name: "Shopping", date: "17th Feb 2025", amount: -30, icon: "🛍️" },
-        { id: 2, name: "Travel", date: "13th Feb 2025", amount: -70, icon: "✈️" },
-        { id: 3, name: "Salary", date: "12th Feb 2025", amount: 180, icon: "💼" },
-        { id: 4, name: "Electricity Bill", date: "11th Feb 2025", amount: -200, icon: "💡" },
-        { id: 5, name: "Loan Repayment", date: "10th Feb 2025", amount: -600, icon: "🏦" },
-        { id: 6, name: "Salary", date: "17th Feb 2025", amount: 1200, icon: "🛍️" },
-        { id: 7, name: "Interest from Savings", date: "13th Feb 2025", amount: 70, icon: "✈️" },
-        { id: 8, name: "E-commerce Sales", date: "12th Feb 2025", amount: 180, icon: "💼" },
-        { id: 9, name: "Graphing Design", date: "11th Feb 2025", amount: 200, icon: "💡" },
-        { id: 10, name: "Affiliate Marketing", date: "10th Feb 2025", amount: 600, icon: "🏦" },
-    ];
+    useEffect(() => {
+        if (errors.incomeSource) {
+            toast.error(errors.incomeSource.message);
+        } else if (errors.incomeAmount) {
+            toast.error(errors.incomeAmount.message);
+        }
+    }, [errors]);
+
+    // Fetch incomes from user data
+    useEffect(() => {
+        if (user?.income && Array.isArray(user.income)) {
+            setIncomes(user.income);
+        }
+    }, [user?.income]);
+
+    // Prepare chart data from actual incomes
+    const chartData = incomes.map((income) => ({
+        name: income.incomeSource || income.IncomeSource,
+        Amount: income.incomeAmount || income.IncomeAmount,
+    }));
+
+    const onSubmit = async (data) => {
+        if (!emoji) {
+            toast.error("Please select an emoji for your income source!");
+            return;
+        }
+
+        const formData = {
+            incomeSource: data.incomeSource,
+            incomeAmount: Number(data.incomeAmount),
+            incomeIcon: emoji,
+        };
+
+        try {
+            const res = await axios.post(
+                `${import.meta.env.VITE_BACKEND_URL}/user/add-income`,
+                formData,
+                { withCredentials: true }
+            );
+
+            if (res.data.success) {
+                toast.success("Income added successfully!");
+                
+                // Update local state immediately
+                const newIncome = {
+                    incomeSource: formData.incomeSource,
+                    incomeAmount: formData.incomeAmount,
+                    incomeIcon: formData.incomeIcon,
+                    date: new Date().toLocaleDateString('en-US', { 
+                        day: 'numeric', 
+                        month: 'short', 
+                        year: 'numeric' 
+                    })
+                };
+                
+                setIncomes(prev => [...prev, newIncome]);
+                
+                // Refresh user data from context
+                await getUser();
+                
+                reset();
+                setEmoji(null);
+                setOpen(false);
+            } else {
+                toast.error(res.data.message || "Something went wrong");
+            }
+        } catch (err) {
+            const message =
+                err?.response?.data?.message || err?.message || "An unexpected error occurred";
+            toast.error(message);
+        }
+    };
+
     return (
         <section className={`mb-20 flex-col  ${internalActiveSection === "Income" ? "flex" : "hidden"}`}>
-            <div className={`bg-white shadow-md overflow-hidden rounded-2xl m-8 p-8 transition flex-col justify-center`}>
+            <div className="bg-white shadow-md overflow-hidden rounded-2xl m-8 p-8 transition flex-col justify-center">
                 <div className="flex justify-between">
                     <div>
                         <h1 className="text-start font-semibold text-lg">Income Overview</h1>
-                        <p className='text-gray-500 mb-4 text-sm'>Track your earnings over time and analye your income trends.</p>
+                        <p className='text-gray-500 mb-4 text-sm'>Track your earnings over time and analyze your income trends.</p>
                     </div>
-                    <button className="flex h-max items-center cursor-pointer gap-2 px-4 py-2 bg-purple-50 text-purple-600 rounded-lg hover:bg-purple-100 transition-colors font-medium text-sm">
+                    <button
+                        onClick={() => setOpen(!open)}
+                        className="flex h-max items-center cursor-pointer gap-2 px-4 py-2 bg-purple-50 text-purple-600 rounded-lg hover:bg-purple-100 transition-colors font-medium text-sm"
+                    >
                         <Plus size={16} />
                         Add Income
                     </button>
                 </div>
-                <BarChart
-                    style={{ width: '100%', maxHeight: '50vh', aspectRatio: 1.618 }}
-                    responsive
-                    data={data}
-                    margin={{
-                        top: 20,
-                        right: 0,
-                        left: 0,
-                        bottom: 5,
-                    }}
-                >
-                    <YAxis width="auto" />
-                    <XAxis width="auto" />
-                    <Tooltip
-                        content={({ active, payload }) => {
-                            if (active && payload && payload.length) {
-                                const data = payload[0].payload;
-                                return (
-                                    <div className="bg-white p-2 border border-gray-200 rounded-md shadow-sm text-sm">
-                                        <p className="font-semibold text-gray-800">{data.name}</p>
-                                        <p className="text-gray-600">Amount: ${data.Amount}</p>
-                                    </div>
-                                );
-                            }
-                            return null;
-                        }}
-                    />
-                    <Bar dataKey="Amount" fill="#8884d8" />
-                </BarChart>
+                
+                {chartData.length > 0 ? (
+                    <BarChart
+                        width={800}
+                        height={400}
+                        data={chartData}
+                        margin={{ top: 20, right: 0, left: 0, bottom: 5 }}
+                    >
+                        <YAxis />
+                        <XAxis dataKey="name" />
+                        <Tooltip
+                            content={({ active, payload }) => {
+                                if (active && payload && payload.length) {
+                                    const data = payload[0].payload;
+                                    return (
+                                        <div className="bg-white p-2 border border-gray-200 rounded-md shadow-sm text-sm">
+                                            <p className="font-semibold text-gray-800">{data.name}</p>
+                                            <p className="text-gray-600">Amount: ${data.Amount}</p>
+                                        </div>
+                                    );
+                                }
+                                return null;
+                            }}
+                        />
+                        <Bar dataKey="Amount" fill="#8884d8" />
+                    </BarChart>
+                ) : (
+                    <div className="text-center py-8 text-gray-500">
+                        No income data available. Add your first income to see the chart.
+                    </div>
+                )}
             </div>
 
             <div className="flex-1 bg-white rounded-2xl m-8 p-5 shadow hover:shadow-md transition">
@@ -111,37 +144,142 @@ const Income = ({ showPage }) => {
                         download <Download size={16} />
                     </button>
                 </div>
-                <ul className="space-y-4 flex flex-wrap px-2 justify-between gap-5">
-                    {transactions.map((t) => (
-                        <li
-                            key={t.id}
-                            className="flex justify-between min-w-100 items-center hover:bg-gray-50 rounded-lg p-2 transition"
-                        >
-                            <div className="flex items-center gap-3">
-                                <span className="text-2xl">{t.icon}</span>
-                                <div>
-                                    <p className="font-medium text-gray-800">{t.name}</p>
-                                    <p className="text-sm text-gray-500">{t.date}</p>
+                
+                {incomes.length >= 0 ? (
+                    <ul className="space-y-4 flex flex-wrap px-2 justify-between gap-5">
+                        {incomes.map((income, index) => {
+                            const source = income.incomeSource || income.IncomeSource;
+                            const amount = income.incomeAmount || income.IncomeAmount;
+                            const icon = income.incomeIcon || income.IncomeIcon;
+                            const date = income.date || income.Date || new Date().toLocaleDateString('en-US', { 
+                                day: 'numeric', 
+                                month: 'short', 
+                                year: 'numeric' 
+                            });
+                            
+                            return (
+                                <li
+                                    key={income._id || index}
+                                    className="flex justify-between min-w-100 items-center hover:bg-gray-50 rounded-lg p-2 transition"
+                                >
+                                    <div className="flex items-center gap-3">
+                                        <span className="text-2xl">{icon}</span>
+                                        <div>
+                                            <p className="font-medium text-gray-800">{source}</p>
+                                            <p className="text-sm text-gray-500">{date}</p>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        {amount >= 0 ? (
+                                            <p className="text-green-600 bg-green-100 rounded-lg px-2 font-medium flex items-center gap-1">
+                                                +${(amount || 0).toLocaleString()} <ArrowUpRight size={14} />
+                                            </p>
+                                        ) : (
+                                            <p className="text-red-500 bg-red-100 rounded-lg px-2 font-medium flex items-center gap-1">
+                                                -${Math.abs(amount).toLocaleString()}{" "}
+                                                <ArrowDownRight size={14} />
+                                            </p>
+                                        )}
+                                    </div>
+                                </li>
+                            );
+                        })}
+                    </ul>
+                ) : (
+                    <div className="text-center py-4 text-gray-500">
+                        No income sources added yet.
+                    </div>
+                )}
+            </div>
+
+            {open && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 bg-opacity-50">
+                    <div className="bg-white rounded-lg p-6 w-[90vw] max-w-md relative max-h-[75vh] overflow-y-auto">
+                        <div className="flex justify-between mb-4">
+                            <h2 className="text-xl font-semibold">Add Income</h2>
+                            <X
+                                size={20}
+                                onClick={() => {
+                                    setOpen(false);
+                                    setShowEmojiPicker(false);
+                                }}
+                                className="cursor-pointer hover:text-purple-600"
+                            />
+                        </div>
+
+                        <form onSubmit={handleSubmit(onSubmit)}>
+                            <div className="mb-4">
+                                <label className="block text-gray-700 mb-2">Select Icon</label>
+                                <div className="flex items-center gap-3">
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+                                        className="border border-gray-300 rounded-md p-2 bg-gray-50 hover:bg-gray-100 transition"
+                                    >
+                                        {emoji ? (
+                                            <span className="text-2xl">{emoji}</span>
+                                        ) : (
+                                            "Pick Emoji"
+                                        )}
+                                    </button>
+                                    {!emoji && <span className="text-red-500 text-sm">Required</span>}
                                 </div>
-                            </div>
-                            <div>
-                                {t.amount > 0 ? (
-                                    <p className="text-green-600 bg-green-100 rounded-lg px-2 font-medium flex items-center gap-1">
-                                        +${t.amount.toLocaleString()} <ArrowUpRight size={14} />
-                                    </p>
-                                ) : (
-                                    <p className="text-red-500 bg-red-100 rounded-lg px-2 font-medium flex items-center gap-1">
-                                        -${Math.abs(t.amount).toLocaleString()}{" "}
-                                        <ArrowDownRight size={14} />
-                                    </p>
+
+                                {showEmojiPicker && (
+                                    <div className="mt-2 relative z-50">
+                                        <EmojiPicker
+                                            onEmojiClick={(e) => {
+                                                setEmoji(e.emoji);
+                                                setShowEmojiPicker(false);
+                                            }}
+                                            height={350}
+                                        />
+                                    </div>
                                 )}
                             </div>
-                        </li>
-                    ))}
-                </ul>
-            </div>
-        </section>
-    )
-}
 
-export default Income
+                            <div className="mb-4">
+                                <label className="block text-gray-700 mb-2">Source</label>
+                                <input
+                                    type="text"
+                                    className="border border-gray-300 rounded-md p-2 w-full"
+                                    placeholder="e.g., Freelance"
+                                    {...register("incomeSource", {
+                                        required: "Source is required",
+                                        minLength: {
+                                            value: 3,
+                                            message: "Source must be at least 3 characters long"
+                                        }
+                                    })}
+                                />
+                            </div>
+
+                            <div className="mb-4">
+                                <label className="block text-gray-700 mb-2">Amount</label>
+                                <input
+                                    type="number"
+                                    step="0.01"
+                                    className="border border-gray-300 rounded-md p-2 w-full"
+                                    placeholder="Income Amount"
+                                    {...register("incomeAmount", {
+                                        required: "Amount is required",
+                                        min: { value: 0.01, message: "Amount must be greater than 0" },
+                                    })}
+                                />
+                            </div>
+
+                            <button
+                                type="submit"
+                                className="bg-purple-600 hover:bg-purple-700 transition-colors cursor-pointer text-white rounded-md px-4 py-2 w-full"
+                            >
+                                Add Income
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            )}
+        </section>
+    );
+};
+
+export default Income;

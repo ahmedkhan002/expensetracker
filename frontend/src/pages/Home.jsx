@@ -6,15 +6,16 @@ import { useState } from 'react'
 import Expenses from '../components/Expenses'
 
 const Home = () => {
+    const [toggle, settoggle] = useState(false)
     
     return (
         <div>
-            <Header />
+            <Header toggle={toggle} settoggle={settoggle} />
             <div className='flex h-full w-full fixed content-start'>
 
                 <div className="flex h-full w-full gap-4 fixed">
                     <div className="lg:w-1/4 xl:w-1/6 z-100">
-                        <Sidebar />
+                        <Sidebar toggle={toggle} />
                     </div>
                     <div className="grow overflow-scroll overflow-x-hidden min-h-4/4">
                         <Dashboard />

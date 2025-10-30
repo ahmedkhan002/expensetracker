@@ -6,6 +6,7 @@ import axios from 'axios'
 import toast from "react-hot-toast";
 
 const SignupForm = ({ onChange }) => {
+    const [loading, setloading] = useState(false)
     const { register, handleSubmit } = useForm();
     const [showPassword, setShowPassword] = useState(false);
     const [profileImage, setProfileImage] = useState(null);
@@ -22,14 +23,45 @@ const SignupForm = ({ onChange }) => {
     });
 
     const onSubmit = async (data) => {
-        const res = await axios.post(import.meta.env.VITE_BACKEND_URL + '/auth/register', { ...data, profileImage });
-        if (res.data.success === true) {
-            toast.success('Account Created Successfully!')
-            onChange('login')
-        } else {
-            toast.error(res.data.message)
-        }
-    };
+  try {
+    setloading(true);
+
+    const formData = new FormData();
+    formData.append("fullname", data.fullname);
+    formData.append("email", data.email);
+    formData.append("password", data.password);
+    if (profileImage) {
+      formData.append("profileImage", profileImage);
+    }
+
+    const res = await axios.post(
+      `${import.meta.env.VITE_BACKEND_URL}/auth/register`,
+      formData,
+      {
+        withCredentials: true,
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+
+    if (res.data.success) {
+      toast.success("Account Created Successfully!");
+      setloading(false);
+      onChange("login");
+    } else {
+      toast.error(res.data.message || "Registration failed");
+      setloading(false);
+    }
+  } catch (err) {
+    const errorMessage =
+      err.response?.data?.message || "Something went wrong!";
+    toast.error(errorMessage);
+    setloading(false);
+  }
+};
+
+
 
     return (
         <section className="flex justify-center max-lg:mx-auto items-center min-h-screen w-[90%]  font-sans">
@@ -118,10 +150,11 @@ const SignupForm = ({ onChange }) => {
                     </div>
 
                     <button
+                        disabled={loading}
                         type="submit"
-                        className="w-full bg-[#6757ac] cursor-pointer hover:bg-[#6757ac7c] hover:text-[#5d49b6] text-white font-semibold py-3 rounded-md transition duration-200"
+                        className={`w-full bg-[#6757ac] hover:bg-[#6757ac7c] hover:text-[#5d49b6] text-white font-semibold py-3 rounded-md transition duration-200 ${loading ? "cursor-not-allowed hover:bg-gray-300 bg-gray-300" : "cursor-pointer"}`}
                     >
-                        SIGN UP
+                        {loading ? 'Loading...' : 'Sign Up'}
                     </button>
 
                 </form>
@@ -135,7 +168,7 @@ const SignupForm = ({ onChange }) => {
                 </p>
             </div>
         </section>
-    );
+    ); 
 };
 
 export default SignupForm;

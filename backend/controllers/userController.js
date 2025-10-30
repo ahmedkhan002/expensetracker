@@ -15,7 +15,9 @@ export const userData = async (req, res) => {
             userData: {
                 name: user.fullname,
                 profilePhoto: user.url,
-                profileId: user.profileID,
+                email: user.email,
+                income: user.UserIncome,
+                expense: user.UserExpenses
             }
         })
     } catch (error) {
@@ -86,3 +88,58 @@ export const deleteFile = async (req, res) => {
 };
 
 
+export const UserIncome = async (req, res) => {
+    try {
+        const { incomeSource, incomeAmount, incomeIcon } = req.body;
+
+        if (!incomeSource || !incomeAmount || !incomeIcon) {
+            return res.json({ success: false, message: "Missing Details" });
+        }
+
+        const userId = req.userId;
+        const user = await userModel.findById(userId);
+        if (!user) {
+            return res.json({ success: false, message: "No user found" });
+        }
+
+        user.UserIncome.push({
+            IncomeSource: incomeSource,
+            IncomeAmount: incomeAmount,
+            IncomeIcon: incomeIcon,
+        })
+
+        await user.save();
+
+        return res.json({ success: true, message: "Income updated successfully" });
+    } catch (error) {
+        return res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+
+export const UserExpense = async (req, res) => {
+    try {
+        const { expenseSource, expenseAmount, expenseIcon } = req.body;
+
+        if (!expenseSource || !expenseAmount || !expenseIcon) {
+            return res.json({ success: false, message: "Missing Details" })
+        }
+        const userId = req.userId;
+        const user = await userModel.findById(userId)
+        if (!user) {
+            return res.json({ success: false, message: 'No User Found' })
+        }
+        user.UserExpenses.push({
+            ExpenseSource: expenseSource,
+            ExpenseAmount: expenseAmount,
+            ExpenseIcon: expenseIcon,
+        });
+        await user.save();
+
+        return res.json({ success: true, message: "Expense updated successfully" });
+
+
+    } catch (error) {
+        return res.json({ success: false, message: error.message })
+    }
+}
