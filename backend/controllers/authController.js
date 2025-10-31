@@ -12,10 +12,7 @@ export const register = async (req, res) => {
     const filePath = req.file?.path || null;
 
     if (!fullname || !email || !password) {
-      return res.status(400).json({
-        success: false,
-        message: "All fields are required",
-      });
+      return res.status(400).json({ success: false, message: "All fields are required" });
     }
 
     const errors = [];
@@ -33,32 +30,25 @@ export const register = async (req, res) => {
         minLength: 8,
         minLowercase: 1,
         minUppercase: 1,
-        minNumbers: 0,
         minSymbols: 1,
       })
     ) {
-      errors.push(
-        "Password must be at least 8 characters and include uppercase, lowercase, and special character"
-      );
+      errors.push("Password must be strong (8+ chars, uppercase, lowercase, special char)");
     }
 
     if (errors.length > 0) {
-      return res.status(400).json({
-        success: false,
-        message: errors.join(", "),
-      });
+      return res.status(400).json({ success: false, message: errors.join(", ") });
     }
 
     const existingUser = await userModel.findOne({ email });
     if (existingUser) {
-      return res
-        .status(400)
-        .json({ success: false, message: "User already exists" });
+      return res.status(400).json({ success: false, message: "User already exists" });
     }
 
     let result = { secure_url: null, public_id: null };
     if (filePath) {
       const uploaded = await uploadOnCLoudinary(filePath);
+      await fs.unlink(filePath).catch(() => {}); // ✅ remove temp file after upload
       if (uploaded && uploaded.secure_url) {
         result.secure_url = uploaded.secure_url;
         result.public_id = uploaded.public_id;
@@ -96,22 +86,9 @@ export const register = async (req, res) => {
     });
   } catch (error) {
     console.error("REGISTER ERROR:", error);
-
-    if (error.name === "ValidationError") {
-      const messages = Object.values(error.errors).map((err) => err.message);
-      return res.status(400).json({
-        success: false,
-        message: messages.join(", "),
-      });
-    }
-
-    return res.status(500).json({
-      success: false,
-      message: "Server error, please try again later",
-    });
+    return res.status(500).json({ success: false, message: "Server error" });
   }
 };
-
 
 
 export const login = async (req, res) => {
