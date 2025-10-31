@@ -9,6 +9,7 @@ import axios from 'axios'
 
 const Income = () => {
     const { internalActiveSection, user, getUser } = useAppContext();
+    const [loading, setloading] = useState(false)
     const [open, setOpen] = useState(false);
     const { register, handleSubmit, reset, formState: { errors } } = useForm();
     const [emoji, setEmoji] = useState(null);
@@ -23,22 +24,22 @@ const Income = () => {
         }
     }, [errors]);
 
-    // Fetch incomes from user data
     useEffect(() => {
         if (user?.income && Array.isArray(user.income)) {
             setIncomes(user.income);
         }
     }, [user?.income]);
 
-    // Prepare chart data from actual incomes
     const chartData = incomes.map((income) => ({
         name: income.incomeSource || income.IncomeSource,
         Amount: income.incomeAmount || income.IncomeAmount,
     }));
 
     const onSubmit = async (data) => {
+        setloading(true)
         if (!emoji) {
             toast.error("Please select an emoji for your income source!");
+            setloading(false)
             return;
         }
 
@@ -57,34 +58,32 @@ const Income = () => {
 
             if (res.data.success) {
                 toast.success("Income added successfully!");
-                
-                // Update local state immediately
                 const newIncome = {
                     incomeSource: formData.incomeSource,
                     incomeAmount: formData.incomeAmount,
                     incomeIcon: formData.incomeIcon,
-                    date: new Date().toLocaleDateString('en-US', { 
-                        day: 'numeric', 
-                        month: 'short', 
-                        year: 'numeric' 
+                    date: new Date().toLocaleDateString('en-US', {
+                        day: 'numeric',
+                        month: 'short',
+                        year: 'numeric'
                     })
                 };
-                
+
                 setIncomes(prev => [...prev, newIncome]);
-                
-                // Refresh user data from context
                 await getUser();
-                
+                setloading(false)
                 reset();
                 setEmoji(null);
                 setOpen(false);
             } else {
                 toast.error(res.data.message || "Something went wrong");
+                setloading(false)
             }
         } catch (err) {
             const message =
                 err?.response?.data?.message || err?.message || "An unexpected error occurred";
             toast.error(message);
+            setloading(false)
         }
     };
 
@@ -104,7 +103,7 @@ const Income = () => {
                         Add Income
                     </button>
                 </div>
-                
+
                 {chartData.length > 0 ? (
                     <BarChart
                         width={800}
@@ -144,19 +143,19 @@ const Income = () => {
                         download <Download size={16} />
                     </button>
                 </div>
-                
+
                 {incomes.length >= 0 ? (
                     <ul className="space-y-4 flex flex-wrap px-2 justify-between gap-5">
                         {incomes.map((income, index) => {
                             const source = income.incomeSource || income.IncomeSource;
                             const amount = income.incomeAmount || income.IncomeAmount;
                             const icon = income.incomeIcon || income.IncomeIcon;
-                            const date = income.date || income.Date || new Date().toLocaleDateString('en-US', { 
-                                day: 'numeric', 
-                                month: 'short', 
-                                year: 'numeric' 
+                            const date = income.date || income.Date || new Date().toLocaleDateString('en-US', {
+                                day: 'numeric',
+                                month: 'short',
+                                year: 'numeric'
                             });
-                            
+
                             return (
                                 <li
                                     key={income._id || index}
@@ -270,9 +269,9 @@ const Income = () => {
 
                             <button
                                 type="submit"
-                                className="bg-purple-600 hover:bg-purple-700 transition-colors cursor-pointer text-white rounded-md px-4 py-2 w-full"
+                                className={`bg-purple-600 hover:bg-purple-700 transition-colors text-white rounded-md px-4 py-2 w-full ${loading ? 'cursor-not-allowed bg-gray-200 hover:bg-gray-200' : 'cursor-pointer'}`}
                             >
-                                Add Income
+                                {loading ? 'loading...' : 'Add Income'}
                             </button>
                         </form>
                     </div>

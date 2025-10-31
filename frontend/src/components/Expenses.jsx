@@ -9,6 +9,7 @@ import EmojiPicker from 'emoji-picker-react';
 
 const Expenses = () => {
     const { internalActiveSection, user, getUser } = useAppContext();
+    const [loading, setloading] = useState(false)
     const [open, setOpen] = useState(false);
     const { register, handleSubmit, reset, formState: { errors } } = useForm();
     const [emoji, setEmoji] = useState(null);
@@ -32,10 +33,10 @@ const Expenses = () => {
     const chartData = expenses.map((expense, index) => {
         const amount = expense.expenseAmount || expense.ExpenseAmount;
         const date = expense.date || expense.Date || `Day ${index + 1}`;
-        
+
         return {
             date: date,
-            amount: Math.abs(amount || 0) 
+            amount: Math.abs(amount || 0)
         };
     });
 
@@ -54,8 +55,10 @@ const Expenses = () => {
     };
 
     const onSubmit = async (data) => {
+        setloading(true)
         if (!emoji) {
             toast.error("Please select an emoji for your expense!");
+            setloading(false)
             return;
         }
 
@@ -74,32 +77,35 @@ const Expenses = () => {
 
             if (res.data.success) {
                 toast.success("Expense added successfully!");
-                
+
                 const newExpense = {
                     expenseSource: formData.expenseSource,
                     expenseAmount: -Math.abs(formData.expenseAmount),
                     expenseIcon: formData.expenseIcon,
-                    date: new Date().toLocaleDateString('en-US', { 
-                        day: 'numeric', 
-                        month: 'short', 
-                        year: 'numeric' 
+                    date: new Date().toLocaleDateString('en-US', {
+                        day: 'numeric',
+                        month: 'short',
+                        year: 'numeric'
                     })
                 };
-                
+
                 setExpenses(prev => [...prev, newExpense]);
-                
+
                 await getUser();
-                
+
                 reset();
                 setEmoji(null);
+                setloading(false)
                 setOpen(false);
             } else {
                 toast.error(res.data.message || "Something went wrong");
+                setloading(false)
             }
         } catch (err) {
             const message =
                 err?.response?.data?.message || err?.message || "An unexpected error occurred";
             toast.error(message);
+            setloading(false)
         }
     };
 
@@ -148,7 +154,7 @@ const Expenses = () => {
                                         tick={{ fill: '#9ca3af', fontSize: 12 }}
                                         dx={-10}
                                     />
-                                    <Tooltip 
+                                    <Tooltip
                                         formatter={(value) => [`$${value}`, 'Amount']}
                                         labelFormatter={(label) => `Date: ${label}`}
                                     />
@@ -179,19 +185,19 @@ const Expenses = () => {
                         download <Download size={16} />
                     </button>
                 </div>
-                
+
                 {expenses.length > 0 ? (
                     <ul className="space-y-4 flex flex-wrap px-5 justify-between gap-5">
                         {expenses.map((expense, index) => {
                             const source = expense.expenseSource || expense.ExpenseSource;
                             const amount = expense.expenseAmount || expense.ExpenseAmount;
                             const icon = expense.expenseIcon || expense.ExpenseIcon;
-                            const date = expense.date || expense.Date || new Date().toLocaleDateString('en-US', { 
-                                day: 'numeric', 
-                                month: 'short', 
-                                year: 'numeric' 
+                            const date = expense.date || expense.Date || new Date().toLocaleDateString('en-US', {
+                                day: 'numeric',
+                                month: 'short',
+                                year: 'numeric'
                             });
-                            
+
                             return (
                                 <li
                                     key={expense._id || index}
@@ -304,10 +310,11 @@ const Expenses = () => {
                             </div>
 
                             <button
+                                disabled={loading}
                                 type="submit"
-                                className="bg-purple-600 hover:bg-purple-700 transition-colors cursor-pointer text-white rounded-md px-4 py-2 w-full"
+                                className={`bg-purple-600 hover:bg-purple-700 transition-colors text-white rounded-md px-4 py-2 w-full ${loading ? 'cursor-not-allowed bg-gray-200 hover:bg-gray-200' : 'cursor-pointer'}`}
                             >
-                                Add Expense
+                                {loading ? 'loading...' : 'Add Expense'}
                             </button>
                         </form>
                     </div>
