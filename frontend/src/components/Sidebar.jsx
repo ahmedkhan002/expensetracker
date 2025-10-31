@@ -10,7 +10,7 @@ import { useAppContext } from '../context/context';
 import toast from "react-hot-toast";
 import axios from "axios";
 
-const Sidebar = ({toggle}) => {
+const Sidebar = ({ toggle }) => {
   const { internalActiveSection, setInternalActiveSection, user } = useAppContext();
   const [loading, setloading] = useState(false);
   const navigate = useNavigate()
@@ -19,9 +19,8 @@ const Sidebar = ({toggle}) => {
       setloading(true)
       const res = await axios.post(
         `${import.meta.env.VITE_BACKEND_URL}/auth/logout`,
-        {
-          withCredentials: true,
-        }
+        {}, 
+        { withCredentials: true }
       );
 
       if (res.data?.success) {
@@ -41,11 +40,11 @@ const Sidebar = ({toggle}) => {
       <div className="flex flex-col items-center mb-10">
         <div className="relative w-20 h-20 rounded-full overflow-hidden bg-purple-100 flex items-center justify-center scroll-none">
           {user ?
-          <img
-            src={user.profilePhoto}
-            alt="User avatar"
-            className="w-full h-full object-cover"
-          /> : <p>{user?.name.slice(0,1).toUpperCase()}</p>
+            <img
+              src={user.profilePhoto}
+              alt="User avatar"
+              className="w-full h-full object-cover"
+            /> : <p>{user?.name.slice(0, 1).toUpperCase()}</p>
           }
         </div>
         <h2 className="mt-4 text-gray-800 font-semibold text-lg">
@@ -88,7 +87,7 @@ const Sidebar = ({toggle}) => {
               className={`flex items-center gap-3 p-3 rounded-xl ${internalActiveSection === "Logout" ? "bg-purple-600 text-white" : "text-gray-700"} font-medium transition hover:text-white hover:bg-purple-700 ${loading ? 'pointer-events-none hover:bg-purple-400 bg-purple-400' : 'cursor-pointer'}`}
             >
               <LogOut size={20} />
-              { loading ? 'Logging Out...' : 'Logout' }
+              {loading ? 'Logging Out...' : 'Logout'}
             </a>
           </li>
         </ul>
