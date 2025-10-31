@@ -8,23 +8,10 @@ import cors from 'cors'
 
 const app = express();
 const port = process.env.PORT || 3000;
-
-const allowedOrigins = [
-    "https://expensetracker-ashen-mu.vercel.app",
-    "http://localhost:5173"
-];
-app.use(
-    cors({
-        origin: (origin, callback) => {
-            if (!origin || allowedOrigins.includes(origin)) {
-                callback(null, true)
-            } else {
-                callback(new Error("Not allowed by CORS"));
-            }
-        },
-        credentials: true,
-    })
-);
+app.use(cors({
+    origin: ["http://localhost:5173","https://expensetracker-myapp.vercel.app"],
+    credentials: true
+}));
 app.use(cookieParser());
 app.use(express.json())
 app.use('/auth', authRoutes)
