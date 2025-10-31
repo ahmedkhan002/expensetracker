@@ -269,7 +269,7 @@ const Income = () => {
 
                             <button
                                 type="submit"
-                                className={`bg-purple-600 hover:bg-purple-700 transition-colors text-white rounded-md px-4 py-2 w-full ${loading ? 'cursor-not-allowed bg-gray-200 hover:bg-gray-200' : 'cursor-pointer'}`}
+                                className={`transition-colors text-white rounded-md px-4 py-2 w-full ${loading ? 'cursor-not-allowed bg-gray-200 hover:bg-gray-200' : 'cursor-pointer bg-purple-600 hover:bg-purple-700'}`}
                             >
                                 {loading ? 'loading...' : 'Add Income'}
                             </button>
