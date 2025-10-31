@@ -6,6 +6,7 @@ import toast from 'react-hot-toast';
 import EmojiPicker from "emoji-picker-react";
 import { useAppContext } from '../context/context'
 import axios from 'axios'
+import * as XLSX from 'xlsx';
 
 const Income = () => {
     const { internalActiveSection, user, getUser } = useAppContext();
@@ -42,20 +43,17 @@ const Income = () => {
             setloading(false)
             return;
         }
-
         const formData = {
             incomeSource: data.incomeSource,
             incomeAmount: Number(data.incomeAmount),
             incomeIcon: emoji,
         };
-
         try {
             const res = await axios.post(
                 `${import.meta.env.VITE_BACKEND_URL}/user/add-income`,
                 formData,
                 { withCredentials: true }
             );
-
             if (res.data.success) {
                 toast.success("Income added successfully!");
                 const newIncome = {
@@ -68,7 +66,6 @@ const Income = () => {
                         year: 'numeric'
                     })
                 };
-
                 setIncomes(prev => [...prev, newIncome]);
                 await getUser();
                 setloading(false)
@@ -80,11 +77,27 @@ const Income = () => {
                 setloading(false)
             }
         } catch (err) {
-            const message =
-                err?.response?.data?.message || err?.message || "An unexpected error occurred";
+            const message = err?.response?.data?.message || err?.message || "An unexpected error occurred";
             toast.error(message);
             setloading(false)
         }
+    };
+
+    const downloadExcel = () => {
+        if (incomes.length === 0) {
+            toast.error("No incomes to download");
+            return;
+        }
+        const data = incomes.map(income => ({
+            Source: income.incomeSource || income.IncomeSource,
+            Amount: income.incomeAmount || income.IncomeAmount,
+            Icon: income.incomeIcon || income.IncomeIcon,
+            Date: income.date || income.Date || new Date().toLocaleDateString(),
+        }));
+        const worksheet = XLSX.utils.json_to_sheet(data);
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, "Incomes");
+        XLSX.writeFile(workbook, "incomes.xlsx");
     };
 
     return (
@@ -139,7 +152,7 @@ const Income = () => {
             <div className="flex-1 bg-white rounded-2xl m-8 p-5 shadow hover:shadow-md transition">
                 <div className="flex items-center justify-between mb-4">
                     <h3 className="font-semibold text-lg">Income Sources</h3>
-                    <button className="text-sm text-gray-600 border border-gray-400 cursor-pointer px-2 rounded-md hover:border-purple-600 hover:text-purple-600 flex items-center transition-colors gap-1">
+                    <button onClick={downloadExcel} className="text-sm text-gray-600 border border-gray-400 cursor-pointer px-2 rounded-md hover:border-purple-600 hover:text-purple-600 flex items-center transition-colors gap-1">
                         download <Download size={16} />
                     </button>
                 </div>
@@ -155,12 +168,8 @@ const Income = () => {
                                 month: 'short',
                                 year: 'numeric'
                             });
-
                             return (
-                                <li
-                                    key={income._id || index}
-                                    className="flex justify-between min-w-100 items-center hover:bg-gray-50 rounded-lg p-2 transition"
-                                >
+                                <li key={income._id || index} className="flex justify-between min-w-100 items-center hover:bg-gray-50 rounded-lg p-2 transition">
                                     <div className="flex items-center gap-3">
                                         <span className="text-2xl">{icon}</span>
                                         <div>
@@ -175,8 +184,7 @@ const Income = () => {
                                             </p>
                                         ) : (
                                             <p className="text-red-500 bg-red-100 rounded-lg px-2 font-medium flex items-center gap-1">
-                                                -${Math.abs(amount).toLocaleString()}{" "}
-                                                <ArrowDownRight size={14} />
+                                                -${Math.abs(amount).toLocaleString()} <ArrowDownRight size={14} />
                                             </p>
                                         )}
                                     </div>
@@ -196,81 +204,32 @@ const Income = () => {
                     <div className="bg-white rounded-lg p-6 w-[90vw] max-w-md relative max-h-[75vh] overflow-y-auto">
                         <div className="flex justify-between mb-4">
                             <h2 className="text-xl font-semibold">Add Income</h2>
-                            <X
-                                size={20}
-                                onClick={() => {
-                                    setOpen(false);
-                                    setShowEmojiPicker(false);
-                                }}
-                                className="cursor-pointer hover:text-purple-600"
-                            />
+                            <X size={20} onClick={() => { setOpen(false); setShowEmojiPicker(false); }} className="cursor-pointer hover:text-purple-600" />
                         </div>
-
                         <form onSubmit={handleSubmit(onSubmit)}>
                             <div className="mb-4">
                                 <label className="block text-gray-700 mb-2">Select Icon</label>
                                 <div className="flex items-center gap-3">
-                                    <button
-                                        type="button"
-                                        onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-                                        className="border border-gray-300 rounded-md p-2 bg-gray-50 hover:bg-gray-100 transition"
-                                    >
-                                        {emoji ? (
-                                            <span className="text-2xl">{emoji}</span>
-                                        ) : (
-                                            "Pick Emoji"
-                                        )}
+                                    <button type="button" onClick={() => setShowEmojiPicker(!showEmojiPicker)} className="border border-gray-300 rounded-md p-2 bg-gray-50 hover:bg-gray-100 transition">
+                                        {emoji ? <span className="text-2xl">{emoji}</span> : "Pick Emoji"}
                                     </button>
                                     {!emoji && <span className="text-red-500 text-sm">Required</span>}
                                 </div>
-
                                 {showEmojiPicker && (
                                     <div className="mt-2 relative z-50">
-                                        <EmojiPicker
-                                            onEmojiClick={(e) => {
-                                                setEmoji(e.emoji);
-                                                setShowEmojiPicker(false);
-                                            }}
-                                            height={350}
-                                        />
+                                        <EmojiPicker onEmojiClick={(e) => { setEmoji(e.emoji); setShowEmojiPicker(false); }} height={350} />
                                     </div>
                                 )}
                             </div>
-
                             <div className="mb-4">
                                 <label className="block text-gray-700 mb-2">Source</label>
-                                <input
-                                    type="text"
-                                    className="border border-gray-300 rounded-md p-2 w-full"
-                                    placeholder="e.g., Freelance"
-                                    {...register("incomeSource", {
-                                        required: "Source is required",
-                                        minLength: {
-                                            value: 3,
-                                            message: "Source must be at least 3 characters long"
-                                        }
-                                    })}
-                                />
+                                <input type="text" className="border border-gray-300 rounded-md p-2 w-full" placeholder="e.g., Freelance" {...register("incomeSource", { required: "Source is required", minLength: { value: 3, message: "Source must be at least 3 characters long" } })} />
                             </div>
-
                             <div className="mb-4">
                                 <label className="block text-gray-700 mb-2">Amount</label>
-                                <input
-                                    type="number"
-                                    step="0.01"
-                                    className="border border-gray-300 rounded-md p-2 w-full"
-                                    placeholder="Income Amount"
-                                    {...register("incomeAmount", {
-                                        required: "Amount is required",
-                                        min: { value: 0.01, message: "Amount must be greater than 0" },
-                                    })}
-                                />
+                                <input type="number" step="0.01" className="border border-gray-300 rounded-md p-2 w-full" placeholder="Income Amount" {...register("incomeAmount", { required: "Amount is required", min: { value: 0.01, message: "Amount must be greater than 0" } })} />
                             </div>
-
-                            <button
-                                type="submit"
-                                className={`transition-colors text-white rounded-md px-4 py-2 w-full ${loading ? 'cursor-not-allowed bg-gray-200 hover:bg-gray-200' : 'cursor-pointer bg-purple-600 hover:bg-purple-700'}`}
-                            >
+                            <button disabled={loading} type="submit" className={`transition-colors text-white rounded-md px-4 py-2 w-full ${loading ? 'cursor-not-allowed bg-gray-200 hover:bg-gray-200' : 'cursor-pointer bg-purple-600 hover:bg-purple-700'}`}>
                                 {loading ? 'loading...' : 'Add Income'}
                             </button>
                         </form>
