@@ -71,8 +71,8 @@ export const register = async (req, res) => {
       fullname,
       email,
       password: hashedPassword,
-      url: result.secure_url || null, 
-      profileID: result.public_id || null, 
+      url: result.secure_url || null,
+      profileID: result.public_id || null,
     });
 
     await user.save();
@@ -115,58 +115,57 @@ export const register = async (req, res) => {
 
 
 export const login = async (req, res) => {
-    const { email, password } = req.body;
+  const { email, password } = req.body;
 
-    if (!email || !password) {
-        return res.json({ success: false, message: 'Email and Password are required' })
+  if (!email || !password) {
+    return res.json({ success: false, message: 'Email and Password are required' })
+  }
+  try {
+    const user = await userModel.findOne({ email })
+    if (!user) {
+      return res.json({ success: false, message: 'Invalid Email Or Password' });
     }
-    try {
-        const user = await userModel.findOne({ email })
-        if (!user) {
-            return res.json({ success: false, message: 'Invalid Email Or Password' });
-        }
-        const match = await bcrypt.compare(password, user.password)
+    const match = await bcrypt.compare(password, user.password)
 
-        if (!match) {
-            return res.json({ success: false, message: 'Invalid Email Or Password' })
-        }
+    if (!match) {
+      return res.json({ success: false, message: 'Invalid Email Or Password' })
+    }
 
-        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
     res.cookie('token', token, {
-  httpOnly: true,
-  secure: process.env.NODE_ENV === 'production', // true on Vercel
-  sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-  maxAge: 7 * 24 * 60 * 60 * 1000,
-});
+      httpOnly: true,
+      secure: true,
+      sameSite: 'none',
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
 
 
-        return res.json({ success: true, message: 'login successfull' })
+    return res.json({ success: true, message: 'login successfull' })
 
-    } catch (error) {
-        res.json({ success: false, message: error.message })
-    }
+  } catch (error) {
+    res.json({ success: false, message: error.message })
+  }
 }
 
 export const logout = async (req, res) => {
-    try {
-        res.clearCookie('token', {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict',
-            maxAge: 7 * 24 * 60 * 60 * 1000
-        })
-        return res.json({ success: true, message: 'loged out' })
+  try {
+    res.clearCookie('token', {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'none',
+    })
+    return res.json({ success: true, message: 'logged out' })
 
-    } catch (error) {
-        res.json({ success: false, message: error.message })
-    }
+  } catch (error) {
+    res.json({ success: false, message: error.message })
+  }
 }
 
 
 export const isAuthenticated = async (req, res) => {
-    try {
-        res.json({ success: true })
-    } catch (error) {
-        res.json({ success: false, message: error.message })
-    }
+  try {
+    res.json({ success: true })
+  } catch (error) {
+    res.json({ success: false, message: error.message })
+  }
 }
