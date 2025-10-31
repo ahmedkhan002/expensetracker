@@ -22,12 +22,11 @@ export const uploadOnCLoudinary = async (filePath) => {
 
     console.log("✅ Uploaded successfully:", result.secure_url);
 
-    // ✅ Remove file safely
     if (fs.existsSync(filePath)) {
       fs.unlinkSync(filePath);
     }
 
-    return result; // ✅ Returns the real Cloudinary object
+    return result;
   } catch (error) {
     console.error("❌ Cloudinary upload error:", error);
     return null;

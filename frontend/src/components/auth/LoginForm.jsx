@@ -5,8 +5,10 @@ import { useState } from "react";
 import { useNavigate } from "react-router";
 import axios from "axios";
 import toast from "react-hot-toast";
+import { useAppContext } from "../../context/context";
 
 const LoginForm = ({ onChange }) => {
+    const { getUser } = useAppContext();
     const [loading, setloading] = useState(false)
     const { register, handleSubmit } = useForm();
     const [showPassword, setShowPassword] = useState(false);
@@ -18,6 +20,7 @@ const LoginForm = ({ onChange }) => {
             const res = await axios.post(import.meta.env.VITE_BACKEND_URL + '/auth/login', { ...data }, { withCredentials: true });
             if (res.data.success === true) {
                 toast.success('Login Successfull!')
+                await getUser()
                 setloading(false)
                 navigate('/home');
             } else {
