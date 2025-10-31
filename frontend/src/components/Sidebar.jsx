@@ -17,7 +17,7 @@ const Sidebar = ({toggle}) => {
   const logout = async () => {
     try {
       setloading(true)
-      const res = await axios.get(
+      const res = await axios.post(
         `${import.meta.env.VITE_BACKEND_URL}/auth/logout`,
         {
           withCredentials: true,

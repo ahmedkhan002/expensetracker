@@ -153,8 +153,9 @@ export const logout = async (req, res) => {
       httpOnly: true,
       secure: true,
       sameSite: 'none',
+      path: '/',
     })
-    return res.json({ success: true, message: 'logged out' })
+    return res.json({ success: true, message: 'logged out successfully' })
 
   } catch (error) {
     res.json({ success: false, message: error.message })

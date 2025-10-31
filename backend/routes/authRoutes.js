@@ -7,7 +7,7 @@ const router = express.Router()
 
 router.post('/login', login)
 router.post('/register', upload.single('profileImage'), register)
-router.get('/logout', logout)
+router.use('/logout', logout)
 router.get('/is-auth', userAuth, isAuthenticated)
 
 export default router
