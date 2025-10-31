@@ -21,7 +21,6 @@ const Dashboard = ({ showPage }) => {
   const [expenses, setExpenses] = useState([])
   const [incomes, setIncomes] = useState([])
   
-  // Calculate totals from actual data
   const totalIncome = incomes.reduce((sum, income) => {
     const amount = income.IncomeAmount || income.incomeAmount || 0;
     return sum + Math.abs(amount);
@@ -34,7 +33,6 @@ const Dashboard = ({ showPage }) => {
 
   const totalBalance = totalIncome - totalExpenses;
 
-  // Update pie chart data with actual calculations
   const pieChartData = [
     { name: "Total Balance", value: totalBalance, color: "#6B46C1" },
     { name: "Total Expenses", value: totalExpenses, color: "#EF4444" },
@@ -42,9 +40,8 @@ const Dashboard = ({ showPage }) => {
   ];
 
   useEffect(() => {
-    // Check multiple possible property names
-    if (user?.UserExpenses && Array.isArray(user.UserExpenses)) {
-      setExpenses(user.UserExpenses);
+    if (user?.expenses && Array.isArray(user.expenses)) {
+      setExpenses(user.expenses);
     } else if (user?.expenses && Array.isArray(user.expenses)) {
       setExpenses(user.expenses);
     } else if (user?.expense && Array.isArray(user.expense)) {
@@ -58,9 +55,7 @@ const Dashboard = ({ showPage }) => {
     }
   }, [user]);
 
-  // Get recent transactions (last 5 expenses and incomes combined)
-  const recentTransactions = [
-    ...expenses.slice(-3).map(expense => ({
+  const recentTransactions = [...expenses.slice(-3).map(expense => ({
       id: expense._id || `expense-${Date.now()}`,
       name: expense.ExpenseSource || expense.expenseSource || 'Expense',
       date: expense.date || new Date().toLocaleDateString(),
@@ -80,7 +75,7 @@ const Dashboard = ({ showPage }) => {
     <div className={` w-full mb-210 h-180 flex-col lg:flex-row bg-gray-50 ${internalActiveSection === "Dashboard" ? "flex" : "hidden"}`}>
       <div className="flex-1 flex flex-col">
         <main className="p-6 max-sm:px-2 flex flex-col gap-6">
-          {/* Summary Cards */}
+          {/* calculations */}
           <div className="flex flex-wrap gap-4">
             <div className="flex-1 min-w-[250px] bg-white rounded-2xl p-5 shadow hover:shadow-md transition">
               <div className="flex items-center gap-3">
