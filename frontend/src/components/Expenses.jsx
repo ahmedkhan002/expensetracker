@@ -109,41 +109,40 @@ const Expenses = () => {
     };
 
     return (
-         <section className={`h-full w-full flex-col  ${internalActiveSection === "Expenses" ? "flex" : "hidden"}`}>
-            <div className="w-full h-screen bg-gray-50 p-8">
-                <div className="bg-white rounded-lg shadow-sm p-8 h-full">
-                    <div className="flex items-start justify-between mb-8">
-                        <div>
-                            <h1 className="text-2xl font-semibold text-gray-900 mb-1">Expense Overview</h1>
-                            <p className="text-sm text-gray-500">Track your spending trends over time and gain insights into where your money goes.</p>
-                        </div>
-                        <button onClick={() => setOpen(!open)} className="flex flex-nowrap text-nowrap h-max items-center cursor-pointer gap-2 px-4 py-2 bg-purple-50 text-purple-600 rounded-lg hover:bg-purple-100 transition-colors font-medium text-sm">
-                            <Plus size={16} /> Add Expense
-                        </button>
+        <section className={`mb-20 flex-col  ${internalActiveSection === "Expenses" ? "flex" : "hidden"}`}>            <div className="w-full h-screen bg-gray-50 p-8">
+            <div className="bg-white rounded-lg shadow-sm p-8 h-full">
+                <div className="flex items-start justify-between mb-8">
+                    <div>
+                        <h1 className="text-2xl font-semibold text-gray-900 mb-1">Expense Overview</h1>
+                        <p className="text-sm text-gray-500">Track your spending trends over time and gain insights into where your money goes.</p>
                     </div>
+                    <button onClick={() => setOpen(!open)} className="flex flex-nowrap text-nowrap h-max items-center cursor-pointer gap-2 px-4 py-2 bg-purple-50 text-purple-600 rounded-lg hover:bg-purple-100 transition-colors font-medium text-sm">
+                        <Plus size={16} /> Add Expense
+                    </button>
+                </div>
 
-                    <div className="w-full" style={{ height: 'calc(100% - 100px)' }}>
-                        {chartData.length > 0 ? (
-                            <ResponsiveContainer minWidth="100%" width="100%" minHeight="300px" height="80%">
-                                <AreaChart data={chartData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
-                                    <defs>
-                                        <linearGradient id="colorAmount" x1="0" y1="0" x2="0" y2="1">
-                                            <stop offset="5%" stopColor="#6366f1" stopOpacity={0.3} />
-                                            <stop offset="95%" stopColor="#6366f1" stopOpacity={0.05} />
-                                        </linearGradient>
-                                    </defs>
-                                    <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fill: '#9ca3af', fontSize: 12 }} dy={10} />
-                                    <YAxis axisLine={false} tickLine={false} tick={{ fill: '#9ca3af', fontSize: 12 }} dx={-10} />
-                                    <Tooltip formatter={(value) => [`$${value}`, 'Amount']} labelFormatter={(label) => `Date: ${label}`} />
-                                    <Area type="monotone" dataKey="amount" stroke="#6366f1" strokeWidth={2.5} fill="url(#colorAmount)" dot={<CustomDot />} activeDot={{ r: 5, fill: '#6366f1' }} />
-                                </AreaChart>
-                            </ResponsiveContainer>
-                        ) : (
-                            <div className="flex items-center justify-center h-full text-gray-500">No expense data available. Add your first expense to see the chart.</div>
-                        )}
-                    </div>
+                <div className="w-full" style={{ height: 'calc(100% - 100px)' }}>
+                    {chartData.length > 0 ? (
+                        <ResponsiveContainer minWidth="100%" width="100%" minHeight="300px" height="80%">
+                            <AreaChart data={chartData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+                                <defs>
+                                    <linearGradient id="colorAmount" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="5%" stopColor="#6366f1" stopOpacity={0.3} />
+                                        <stop offset="95%" stopColor="#6366f1" stopOpacity={0.05} />
+                                    </linearGradient>
+                                </defs>
+                                <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fill: '#9ca3af', fontSize: 12 }} dy={10} />
+                                <YAxis axisLine={false} tickLine={false} tick={{ fill: '#9ca3af', fontSize: 12 }} dx={-10} />
+                                <Tooltip formatter={(value) => [`$${value}`, 'Amount']} labelFormatter={(label) => `Date: ${label}`} />
+                                <Area type="monotone" dataKey="amount" stroke="#6366f1" strokeWidth={2.5} fill="url(#colorAmount)" dot={<CustomDot />} activeDot={{ r: 5, fill: '#6366f1' }} />
+                            </AreaChart>
+                        </ResponsiveContainer>
+                    ) : (
+                        <div className="flex items-center justify-center h-full text-gray-500">No expense data available. Add your first expense to see the chart.</div>
+                    )}
                 </div>
             </div>
+        </div>
 
             <div className="flex-1 bg-white rounded-2xl m-8 p-5 shadow hover:shadow-md transition">
                 <div className="flex items-center justify-between mb-4">
