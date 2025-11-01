@@ -72,7 +72,7 @@ const Dashboard = ({ showPage }) => {
   ].sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 5);
 
   return (
-    <div className={` w-full h-max min-h-screen flex-col lg:flex-row bg-gray-50 ${internalActiveSection === "Dashboard" ? "flex" : "hidden"}`}>
+    <div className={` w-full h-max min-h-screen pb-200 flex-col lg:flex-row bg-gray-50 ${internalActiveSection === "Dashboard" ? "flex" : "hidden"}`}>
       <div className="flex-1 flex flex-col">
         <main className="p-6 max-sm:px-2 flex flex-col gap-6">
           {/* calculations */}
