@@ -9,12 +9,12 @@ const Auth = () => {
 
     return (
         <div>
-            <h1 className='text-black font-sans text-2xl font-semibold absolute top-5 left-5'>
+            <h1 className='text-black font-sans text-2xl max-sm:text-xl font-semibold absolute top-5 left-5'>
                 Expense Tracker
             </h1>
 
             <div className="flex justify-between max-lg:flex-col w-full">
-                <section className='flex px-5 items-center h-screen w-full'>
+                <section className='flex px-5 max-sm:px-2 items-center h-screen max-sm:h-full max-sm:py-20 w-full'>
                     {showSignup ? (
                         <SignupForm onChange={() => setShowSignup(false)} />
                     ) : (
@@ -22,7 +22,7 @@ const Auth = () => {
                     )}
                 </section>
 
-                <section className='w-full h-screen relative overflow-hidden bg-[#ccc9db67]'>
+                <section className='w-full max-sm:hidden h-screen relative overflow-hidden bg-[#ccc9db67]'>
                     <div className='size-40 absolute rounded-br-4xl bg-[#6757ac]'></div>
                     <div className='relative rounded-lg z-100 flex gap-3 px-3 items-center h-15 mx-20 max-lg:mx-10 top-10 bg-white'>
                         <p className='size-8 rounded-full text-white flex items-center justify-center bg-[#6757ac]'>
