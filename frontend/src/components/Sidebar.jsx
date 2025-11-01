@@ -46,7 +46,7 @@ const Sidebar = ({ toggle, setToggle }) => {
     <>
       {toggle && (
         <div
-          className="fixed inset-0 top-16 bg-black/20 bg-opacity-50 z-40 transition-opacity duration-300"
+          className="fixed inset-0 max-lg:top-16 bg-black/20 bg-opacity-50 z-40 transition-opacity duration-300"
           onClick={() => setToggle(false)}
         ></div>
       )}
