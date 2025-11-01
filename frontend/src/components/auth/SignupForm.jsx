@@ -64,7 +64,7 @@ const SignupForm = ({ onChange }) => {
 
 
     return (
-        <section className="flex justify-center max-lg:mx-auto items-center min-h-screen w-[90%] max-sm:w-full font-sans">
+        <section className="flex justify-center max-lg:mx-auto items-center min-h-screen xl:w-[80%] max-lg:w-[60&] max-sm:w-full font-sans">
             <div className="w-full">
                 <div className="text-center mb-6">
                     <h1 className="text-2xl font-semibold text-gray-900">

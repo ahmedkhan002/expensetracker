@@ -36,7 +36,7 @@ const LoginForm = ({ onChange }) => {
     };
 
     return (
-        <section className="flex justify-center items-center max-lg:mx-auto min-h-screen w-[70%] max-sm:w-[80%] font-sans">
+        <section className="flex justify-center items-center max-lg:mx-auto min-h-screen xl:w-[80%] max-lg:w-[60&] max-sm:w-full font-sans">
             <div className="w-full ">
                 <div className="mb-6 max-lg:text-center">
                     <h1 className="text-2xl font-semibold text-gray-900 mb-1">
