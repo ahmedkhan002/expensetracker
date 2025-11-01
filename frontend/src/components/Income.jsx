@@ -101,7 +101,7 @@ const Income = () => {
     };
 
     return (
-        <section className={`h-full w-full flex-col  ${internalActiveSection === "Income" ? "flex" : "hidden"}`}>
+        <section className={`h-max min-h-200 w-full flex-col  ${internalActiveSection === "Income" ? "flex" : "hidden"}`}>
             <div className="bg-white shadow-md overflow-hidden rounded-2xl m-8 p-8 transition flex-col justify-center">
                 <div className="flex justify-between">
                     <div>
