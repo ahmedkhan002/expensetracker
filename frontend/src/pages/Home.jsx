@@ -7,22 +7,21 @@ import Expenses from '../components/Expenses'
 
 const Home = () => {
     const [toggle, settoggle] = useState(false)
-    
+
     return (
         <div>
             <Header toggle={toggle} settoggle={settoggle} />
             <div className='flex h-full w-full fixed content-start'>
 
-                <div className="flex h-full w-full gap-4 fixed">
-                    <div className="lg:w-1/4 xl:w-1/6 z-100">
-                        <Sidebar toggle={toggle} />
-                    </div>
-                    <div className="grow overflow-scroll overflow-x-hidden min-h-4/4">
+                <div className="flex h-full w-full">
+                    <Sidebar toggle={toggle} setToggle={settoggle} />
+                    <main className="grow overflow-scroll overflow-x-hidden">
                         <Dashboard />
                         <Income />
                         <Expenses />
-                    </div>
+                    </main>
                 </div>
+
             </div>
         </div>
     )
