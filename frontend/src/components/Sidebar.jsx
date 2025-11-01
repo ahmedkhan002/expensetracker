@@ -46,13 +46,13 @@ const Sidebar = ({ toggle, setToggle }) => {
     <>
       {toggle && (
         <div
-          className="fixed inset-0 max-lg:top-16 bg-black/20 bg-opacity-50 z-40 transition-opacity duration-300"
+          className="fixed inset-0 top-16 bg-black/20 bg-opacity-50 z-40 transition-opacity duration-300"
           onClick={() => setToggle(false)}
         ></div>
       )}
 
       <aside
-        className={`fixed top-16 left-0 z-50 h-[calc(100vh-4rem)] w-64 bg-white border-r border-gray-200 p-6 flex flex-col transform transition-transform duration-300 ease-in-out 
+        className={`fixed max-lg:top-16 left-0 z-50 h-[calc(100vh-4rem)] w-64 bg-white border-r border-gray-200 p-6 flex flex-col transform transition-transform duration-300 ease-in-out 
         ${toggle ? "translate-x-0" : "-translate-x-full"} 
         lg:translate-x-0 lg:relative lg:z-auto lg:flex`}
       >
