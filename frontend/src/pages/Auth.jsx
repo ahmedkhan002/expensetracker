@@ -14,7 +14,7 @@ const Auth = () => {
             </h1>
 
             <div className="flex justify-between max-lg:flex-col w-full">
-                <section className='flex px-10 max-sm:px-2 items-center h-screen max-sm:h-full max-sm:py-20 w-full'>
+                <section className='flex px-5 max-sm:px-10 items-center h-screen max-sm:h-full max-sm:py-20 w-full'>
                     {showSignup ? (
                         <SignupForm onChange={() => setShowSignup(false)} />
                     ) : (

@@ -14,7 +14,7 @@ const Home = () => {
             <div className='flex h-full w-full fixed content-start'>
                 <div className="flex h-full w-full">
                     <Sidebar toggle={toggle} setToggle={settoggle} />
-                    <main className="grow overflow-scroll overflow-x-hidden">
+                    <main className="grow overflow-scroll min-h-max overflow-x-hidden">
                         <Dashboard />
                         <Income />
                         <Expenses />
