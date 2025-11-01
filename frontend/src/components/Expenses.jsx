@@ -109,7 +109,7 @@ const Expenses = () => {
     };
 
     return (
-        <section className={`h-max min-h-screen pb-200 w-full flex-col  ${internalActiveSection === "Expenses" ? "flex" : "hidden"}`}>
+         <section className={`h-full w-full flex-col  ${internalActiveSection === "Expenses" ? "flex" : "hidden"}`}>
             <div className="w-full h-screen bg-gray-50 p-8">
                 <div className="bg-white rounded-lg shadow-sm p-8 h-full">
                     <div className="flex items-start justify-between mb-8">
