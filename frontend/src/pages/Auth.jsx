@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import SignupForm from '../components/auth/SignupForm'
 import LoginForm from '../components/auth/LoginForm'
 import loginchart from '../assets/images/loginchart.PNG'
