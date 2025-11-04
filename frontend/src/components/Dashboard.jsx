@@ -16,8 +16,8 @@ import { ArrowUpRight, ArrowDownRight, HandCoins, WalletMinimal, CreditCard } fr
 import { useAppContext } from '../context/context'
 import { useState, useEffect } from 'react'
 
-const Dashboard = ({ showPage }) => {
-  const { internalActiveSection, setInternalActiveSection, user } = useAppContext();
+const Dashboard = () => {
+  const { internalActiveSection, setInternalActiveSection, user, getUser } = useAppContext();
   const [expenses, setExpenses] = useState([])
   const [incomes, setIncomes] = useState([])
 

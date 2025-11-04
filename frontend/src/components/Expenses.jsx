@@ -160,7 +160,7 @@ const Expenses = () => {
                             const icon = expense.expenseIcon || expense.ExpenseIcon;
                             const date = expense.date || expense.Date || new Date().toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' });
                             return (
-                                <li key={expense._id || index} className="flex justify-between min-w-100 items-center hover:bg-gray-50 rounded-lg p-2 transition">
+                                <li key={expense._id || index} className="flex justify-between min-w-100 items-center hover:bg-gray-50 shadow-sm rounded-lg p-2 transition">
                                     <div className="flex items-center gap-3">
                                         <span className="text-2xl">{icon}</span>
                                         <div>

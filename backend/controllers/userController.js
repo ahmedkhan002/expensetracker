@@ -138,7 +138,6 @@ export const UserExpense = async (req, res) => {
 
         return res.json({ success: true, message: "Expense updated successfully" });
 
-
     } catch (error) {
         return res.json({ success: false, message: error.message })
     }
