@@ -6,6 +6,7 @@ import toast from 'react-hot-toast';
 import EmojiPicker from "emoji-picker-react";
 import { useAppContext } from '../context/context'
 import axios from 'axios'
+import * as XLSX from 'xlsx';
 
 const Income = () => {
     const { internalActiveSection, user, getUser } = useAppContext();
@@ -87,6 +88,22 @@ const Income = () => {
         }
     };
 
+        const handleDownload = () => {
+            if (incomes.length === 0) {
+                toast.error("No incomes to download");
+                return;
+            }
+            const worksheet = XLSX.utils.json_to_sheet(incomes.map((e) => ({
+                Source: e.incomeSource || e.IncomeSource,
+                Amount: e.expenseAmount || e.ExpenseAmount,
+                Icon: e.expenseIcon || e.ExpenseIcon,
+                Date: e.date || e.Date,
+            })));
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, "Incomes");
+            XLSX.writeFile(workbook, "incomes.xlsx");
+        };
+
     return (
         <section className={`min-h-max mb-20 flex-col  ${internalActiveSection === "Income" ? "flex" : "hidden"}`}>
             <div className="bg-white shadow-md overflow-hidden rounded-2xl m-8 p-8 transition flex-col justify-center">
@@ -139,7 +156,7 @@ const Income = () => {
             <div className="flex-1 bg-white rounded-2xl m-8 p-5 shadow hover:shadow-md transition">
                 <div className="flex items-center justify-between mb-4">
                     <h3 className="font-semibold text-lg">Income Sources</h3>
-                    <button className="text-sm text-gray-600 border border-gray-400 cursor-pointer px-2 rounded-md hover:border-purple-600 hover:text-purple-600 flex items-center transition-colors gap-1">
+                    <button onClick={handleDownload} className="text-sm text-gray-600 border border-gray-400 cursor-pointer px-2 rounded-md hover:border-purple-600 hover:text-purple-600 flex items-center transition-colors gap-1">
                         download <Download size={16} />
                     </button>
                 </div>
