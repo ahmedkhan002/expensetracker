@@ -5,8 +5,10 @@ import { deleteFromCloudinary, uploadOnCLoudinary } from "../config/cloudinary.j
 
 export const userData = async (req, res) => {
     try {
-        const { userId } = req.userId;
-        const user = await userModel.findOne(userId)
+        const userId = req.userId;
+
+        const user = await userModel.findById(userId);
+        
         if (!user) {
             return res.json({ success: false, message: 'No User Found' })
         }
@@ -21,16 +23,16 @@ export const userData = async (req, res) => {
             }
         })
     } catch (error) {
-        return res.json({ success: false, message: error.messsage })
+        return res.json({ success: false, message: error.message })
     }
 }
 
 export const uploadFile = async (req, res) => {
     try {
         const filePath = req.file?.path;
-        const { userId } = req.userId;
+        const userId = req.userId;
 
-        const user = await userModel.findOne(userId)
+        const user = await userModel.findById(userId);
 
         if (!user) {
             return res.json({ success: false, message: 'No User Found' })
@@ -63,10 +65,10 @@ export const uploadFile = async (req, res) => {
 export const deleteFile = async (req, res) => {
     try {
         const { profileID } = req.body;
-        const { userId } = req.userId;
+        const userId = req.userId;
 
         if (!profileID) return res.json({ success: false, message: 'profile id required' })
-        const user = await userModel.findOne(userId)
+        const user = await userModel.findById(userId)
 
         if (!user) {
             return res.json({ success: false, message: 'No User Found' })

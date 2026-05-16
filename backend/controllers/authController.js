@@ -117,10 +117,10 @@ export const register = async (req, res) => {
 export const login = async (req, res) => {
   const { email, password } = req.body;
 
-  if (!email || !password) {
-    return res.json({ success: false, message: 'Email and Password are required' })
-  }
   try {
+    if (!email || !password) {
+      return res.json({ success: false, message: 'Email and Password are required' })
+    }
     const user = await userModel.findOne({ email })
     if (!user) {
       return res.json({ success: false, message: 'Invalid Email Or Password' });

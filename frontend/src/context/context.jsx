@@ -20,13 +20,17 @@ export const ContextProvider = ({ children }) => {
       if (res.data.success) {
         setUser(res.data.userData);
       } else {
-        toast.error(res.data.message || "Failed to fetch user");
+        if (res.data.message !== "User Not Authorized") {
+          toast.error(res.data.message || "Failed to fetch user");
+        }
         setUser(null);
       }
     } catch (err) {
       const message =
         err?.response?.data?.message || err?.message || "An unexpected error occurred";
-      toast.error(message);
+      if (message !== "User Not Authorized") {
+        toast.error(message);
+      }
       setUser(null);
     } finally {
       setIsLoading(false);
